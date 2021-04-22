@@ -331,6 +331,35 @@ class NiceHashPrivateApi:
         query = "market={}&orderId={}".format(market, order_id)
         return self.request('DELETE', '/exchange/api/v2/order', query, None)
 
+    # action should be one of NiceHashRigAction
+    # if action is POWER_MODE, 
+    #   power_mode must be one of NiceHashRigPowerMode
+    #
+    # Permissions required:
+    #   MARI - Mining / Manage rigs (MARI)
+    def rig_action(self, rig_id, device_id, action, power_mode=None, group=None):
+        withdraw_data = {
+            "rigId": rig_id,
+            "deviceId": device_id,
+            "action": action.name
+        }
+        if group:
+            withdraw_data['group'] = group
+        
+        if power_mode:
+            withdraw_data['options'] = [power_mode.name]
+
+        return self.request('POST', '/main/api/v2/mining/rigs/status2', '', withdraw_data)
+
+class NiceHashRigAction(Enum):
+    START
+    STOP
+    POWER_MODE
+
+class NiceHashRigPowerMode(Enum):
+    HIGH
+    MEDIUM
+    LOW
 
 if __name__ == "__main__":
     parser = optparse.OptionParser()

@@ -1,2 +1,2 @@
 # For making HTTP requests to APIs
-requests>=2.22.0
+requests>=2.25.1

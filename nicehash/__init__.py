@@ -1,1 +1,1 @@
-from .client import NiceHashPrivateApi
+from .client import NiceHashPrivateApi, NiceHashRigAction, NiceHashRigPowerMode
