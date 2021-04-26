@@ -7,6 +7,7 @@ import json
 from hashlib import sha256
 import optparse
 from urllib.parse import urlencode
+from enum import Enum
 
 
 class NiceHashPublicApi:
@@ -331,6 +332,35 @@ class NiceHashPrivateApi:
         query = "market={}&orderId={}".format(market, order_id)
         return self.request('DELETE', '/exchange/api/v2/order', query, None)
 
+    # action should be one of NiceHashRigAction
+    # if action is POWER_MODE, 
+    #   power_mode must be one of NiceHashRigPowerMode
+    #
+    # Permissions required:
+    #   MARI - Mining / Manage rigs (MARI)
+    def rig_action(self, rig_id, device_id, action, power_mode=None, group=None):
+        action_data = {
+            'rigId': rig_id,
+            'deviceId': device_id,
+            'action': action.name
+        }
+        if group:
+            action_data['group'] = group
+        
+        if power_mode:
+            action_data['options'] = [power_mode.name]
+
+        return self.request('POST', '/main/api/v2/mining/rigs/status2', '', action_data)
+
+class NiceHashRigAction(Enum):
+    START = 0
+    STOP = 1
+    POWER_MODE = 2
+
+class NiceHashRigPowerMode(Enum):
+    HIGH = 0
+    MEDIUM = 1
+    LOW = 2
 
 if __name__ == "__main__":
     parser = optparse.OptionParser()
