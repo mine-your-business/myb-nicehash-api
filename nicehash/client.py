@@ -79,10 +79,10 @@ class NiceHashPublicApi:
 
 class NiceHashPrivateApi:
 
-    def __init__(self, host, organisation_id, key, secret, verbose=False):
+    def __init__(self, host, organization_id, key, secret, verbose=False):
         self.key = key
         self.secret = secret
-        self.organisation_id = organisation_id
+        self.organization_id = organization_id
         self.host = host
         self.verbose = verbose
 
@@ -98,7 +98,7 @@ class NiceHashPrivateApi:
         message += bytearray(xnonce, 'utf-8')
         message += bytearray('\x00', 'utf-8')
         message += bytearray('\x00', 'utf-8')
-        message += bytearray(self.organisation_id, 'utf-8')
+        message += bytearray(self.organization_id, 'utf-8')
         message += bytearray('\x00', 'utf-8')
         message += bytearray('\x00', 'utf-8')
         message += bytearray(method, 'utf-8')
@@ -120,7 +120,7 @@ class NiceHashPrivateApi:
             'X-Nonce': xnonce,
             'X-Auth': xauth,
             'Content-Type': 'application/json',
-            'X-Organization-Id': self.organisation_id,
+            'X-Organization-Id': self.organization_id,
             'X-Request-Id': str(uuid.uuid4())
         }
 
