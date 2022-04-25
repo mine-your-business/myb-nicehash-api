@@ -162,8 +162,11 @@ class NiceHashPrivateApi:
 
         return algo_setting
 
-    def get_accounts(self):
-        return self.request('GET', '/main/api/v2/accounting/accounts2/', '', None)
+    def get_accounts(self, fiat=None):
+        params = ''
+        if fiat:
+            params = f'fiat={fiat}'
+        return self.request('GET', '/main/api/v2/accounting/accounts2/', params, None)
 
     def get_accounts_for_currency(self, currency):
         return self.request('GET', '/main/api/v2/accounting/account2/' + currency, '', None)
