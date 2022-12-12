@@ -313,6 +313,16 @@ class NiceHashPrivateApi:
 
         return self.request('GET', '/main/api/v2/mining/rigs2', urlencode(params, True), None)
 
+    def get_mining_rigs_payouts(self, before_timestamp=None, size=25, page=0):
+        params = {
+            'size': size,
+            'page': page
+        }
+        if before_timestamp:
+            params['beforeTimestamp'] = before_timestamp
+
+        return self.request('GET', '/main/api/v2/mining/rigs/payouts', urlencode(params, True), None)
+
     def get_my_exchange_orders(self, market):
         return self.request('GET', '/exchange/api/v2/myOrders', 'market=' + market, None)
 
