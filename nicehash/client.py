@@ -292,7 +292,58 @@ class NiceHashPrivateApi:
         }
         return self.request('POST', '/main/api/v2/hashpower/order/' + order_id + '/updatePriceAndLimit/', '',
                             price_data)
-    
+
+    def get_mining_address(self):
+        return self.request('GET', '/main/api/v2/mining/miningAddress', '', None)
+
+    def get_mining_algo_stats(self, rig_id=None):
+        params = {}
+        if rig_id:
+            params['rigId'] = rig_id
+
+        return self.request('GET', '/main/api/v2/mining/algo/stats', urlencode(params, True), None)
+
+    def get_mining_groups_list(self, extendedResponse=False):
+        params = {}
+        if extendedResponse:
+            params['extendedResponse'] = extendedResponse
+
+        return self.request('GET', '/main/api/v2/mining/groups/list', urlencode(params, True), None)
+
+    def get_mining_rig_stats_algo(self, rig_id, algorithm, after_timestamp=None, before_timestamp=None):
+        params = {
+            'rigId': rig_id,
+            'algorithm': algorithm
+        }
+        if after_timestamp:
+            params['afterTimestamp'] = after_timestamp
+        if before_timestamp:
+            params['beforeTimestamp'] = before_timestamp
+
+        return self.request('GET', '/main/api/v2/mining/rig/stats/algo', urlencode(params, True), None)
+
+    def get_mining_rigs_stats_algo(self, algorithm, after_timestamp=None, before_timestamp=None):
+        params = {
+            'algorithm': algorithm
+        }
+        if after_timestamp:
+            params['afterTimestamp'] = after_timestamp
+        if before_timestamp:
+            params['beforeTimestamp'] = before_timestamp
+
+        return self.request('GET', '/main/api/v2/mining/rigs/stats/algo', urlencode(params, True), None)
+
+    def get_mining_rig_stats_unpaid(self, rig_id, after_timestamp=None, before_timestamp=None):
+        params = {
+            'rigId': rig_id
+        }
+        if after_timestamp:
+            params['afterTimestamp'] = after_timestamp
+        if before_timestamp:
+            params['beforeTimestamp'] = before_timestamp
+
+        return self.request('GET', '/main/api/v2/mining/rig/stats/unpaid', urlencode(params, True), None)
+
     def get_mining_rigs_stats_unpaid(self, after_timestamp=None, before_timestamp=None):
         params = {}
         if after_timestamp:
@@ -301,6 +352,9 @@ class NiceHashPrivateApi:
             params['beforeTimestamp'] = before_timestamp
 
         return self.request('GET', '/main/api/v2/mining/rigs/stats/unpaid', urlencode(params, True), None)
+
+    def get_mining_rig(self, rig_id):
+        return self.request('GET', '/main/api/v2/mining/rig2/' + rig_id, '', None)
     
     def get_mining_rigs(self, size=25, page=0, path=None, sort='NAME'):
         params = {
@@ -312,6 +366,18 @@ class NiceHashPrivateApi:
             params['path'] = path
 
         return self.request('GET', '/main/api/v2/mining/rigs2', urlencode(params, True), None)
+
+    def get_mining_rigs_active_workers(self, size=100, page=0, sortParameter=None, sortDirection=None):
+        params = {
+            'size': size,
+            'page': page
+        }
+        if sortParameter:
+            params['sortParameter'] = sortParameter
+        if sortDirection:
+            params['sortDirection'] = sortDirection
+
+        return self.request('GET', '/main/api/v2/mining/rigs/activeWorkers', urlencode(params, True), None)
 
     def get_mining_rigs_payouts(self, before_timestamp=None, size=25, page=0):
         params = {
