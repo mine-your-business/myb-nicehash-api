@@ -103,7 +103,16 @@ class NiceHashPrivateApi:
         self.host = host
         self.verbose = verbose
 
-    def build_headers(self, method, path, query, body_json=None, xtime=None, xnonce=None, request_id=None):
+    def build_headers(
+        self,
+        method: str,
+        path: str,
+        query: str,
+        body_json: str | None = None,
+        xtime: int | None = None,
+        xnonce: str | None = None,
+        request_id: str | None = None,
+    ) -> dict[str, str]:
         """Return the signed request headers NiceHash expects for a private API call.
 
         `xtime`, `xnonce` and `request_id` default to the current time and fresh UUIDs.
