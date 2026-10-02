@@ -1,0 +1,24 @@
+{
+  "credentials": {
+    "key": "00000000-fake-key0-0000-000000000000",
+    "secret": "11111111-fake-secr-et00-000000000000111111111-fake-secr-et00-000000000000",
+    "organization_id": "22222222-fake-org0-0000-000000000000"
+  },
+  "request": {
+    "method": "GET",
+    "path": "/main/api/v2/accounting/accounts2/",
+    "query": "fiat=USD",
+    "body": null,
+    "x_time": 1759400000000,
+    "x_nonce": "33333333-3333-4333-8333-333333333333",
+    "request_id": "44444444-4444-4444-8444-444444444444"
+  },
+  "expected_headers": {
+    "X-Time": "1759400000000",
+    "X-Nonce": "33333333-3333-4333-8333-333333333333",
+    "X-Auth": "00000000-fake-key0-0000-000000000000:4e63abe8f16fc32e59f1e955a3032f157881673b98b544b7814f5d21a2c93a3c",
+    "Content-Type": "application/json",
+    "X-Organization-Id": "22222222-fake-org0-0000-000000000000",
+    "X-Request-Id": "44444444-4444-4444-8444-444444444444"
+  }
+}

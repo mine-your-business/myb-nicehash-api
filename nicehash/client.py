@@ -1,11 +1,11 @@
-from datetime import datetime
-from time import mktime
+import time
 import uuid
 import hmac
 import requests
 import json
 from hashlib import sha256
 import optparse
+import sys
 from urllib.parse import urlencode
 from enum import Enum
 
@@ -44,11 +44,26 @@ class NiceHashPublicApi:
     def get_global_stats_24(self):
         return self.request('GET', '/main/api/v2/public/stats/global/24h/', '', None)
 
-    def get_active_orders(self):
-        return self.request('GET', '/main/api/v2/public/orders/active/', '', None)
+    def get_active_orders(self, algorithm=None, market=None, page=None, size=None):
+        params = {}
+        if algorithm:
+            params['algorithm'] = algorithm
+        if market:
+            params['market'] = market
+        if page is not None:
+            params['page'] = page
+        if size is not None:
+            params['size'] = size
+        return self.request('GET', '/main/api/v2/public/orders', urlencode(params), None)
 
-    def get_active_orders2(self):
-        return self.request('GET', '/main/api/v2/public/orders/active2/', '', None)
+    # Undocumented endpoint; NiceHash rejects it with 400 unless `algorithm` is given.
+    def get_active_orders2(self, algorithm=None, market=None):
+        params = {}
+        if algorithm:
+            params['algorithm'] = algorithm
+        if market:
+            params['market'] = market
+        return self.request('GET', '/main/api/v2/public/orders/active2/', urlencode(params), None)
 
     def buy_info(self):
         return self.request('GET', '/main/api/v2/public/buy/info/', '', None)
@@ -69,13 +84,15 @@ class NiceHashPublicApi:
         return self.request('GET', '/exchange/api/v2/info/status', '', None)
 
     def get_exchange_trades(self, market):
-        return self.request('GET', '/exchange/api/v2/trades', 'market=' + market, None)
+        return self.request('GET', '/exchange/api/v2/info/trades', 'market=' + market, None)
 
     def get_candlesticks(self, market, from_s, to_s, resolution):
-        return self.request('GET', '/exchange/api/v2/candlesticks', "market={}&from={}&to={}&resolution={}".format(market, from_s, to_s, resolution), None)
+        query = "market={}&from={}&to={}&resolution={}".format(market, from_s, to_s, resolution)
+        return self.request('GET', '/exchange/api/v2/info/candlesticks', query, None)
 
     def get_exchange_orderbook(self, market, limit):
         return self.request('GET', '/exchange/api/v2/orderbook', "market={}&limit={}".format(market, limit), None)
+
 
 class NiceHashPrivateApi:
 
@@ -86,10 +103,17 @@ class NiceHashPrivateApi:
         self.host = host
         self.verbose = verbose
 
-    def request(self, method, path, query, body):
+    def build_headers(self, method, path, query, body_json=None, xtime=None, xnonce=None, request_id=None):
+        """Return the signed request headers NiceHash expects for a private API call.
 
-        xtime = self.get_epoch_ms_from_now()
-        xnonce = str(uuid.uuid4())
+        `xtime`, `xnonce` and `request_id` default to the current time and fresh UUIDs.
+        """
+        if xtime is None:
+            xtime = self.get_epoch_ms_from_now()
+        if xnonce is None:
+            xnonce = str(uuid.uuid4())
+        if request_id is None:
+            request_id = str(uuid.uuid4())
 
         message = bytearray(self.key, 'utf-8')
         message += bytearray('\x00', 'utf-8')
@@ -107,25 +131,27 @@ class NiceHashPrivateApi:
         message += bytearray('\x00', 'utf-8')
         message += bytearray(query, 'utf-8')
 
-        if body:
-            body_json = json.dumps(body)
+        if body_json:
             message += bytearray('\x00', 'utf-8')
             message += bytearray(body_json, 'utf-8')
 
         digest = hmac.new(bytearray(self.secret, 'utf-8'), message, sha256).hexdigest()
         xauth = self.key + ":" + digest
 
-        headers = {
+        return {
             'X-Time': str(xtime),
             'X-Nonce': xnonce,
             'X-Auth': xauth,
             'Content-Type': 'application/json',
             'X-Organization-Id': self.organization_id,
-            'X-Request-Id': str(uuid.uuid4())
+            'X-Request-Id': request_id
         }
 
+    def request(self, method, path, query, body):
+        body_json = json.dumps(body) if body else None
+
         s = requests.Session()
-        s.headers = headers
+        s.headers = self.build_headers(method, path, query, body_json)
 
         url = self.host + path
         if query:
@@ -134,7 +160,7 @@ class NiceHashPrivateApi:
         if self.verbose:
             print(method, url)
 
-        if body:
+        if body_json:
             response = s.request(method, url, data=body_json)
         else:
             response = s.request(method, url)
@@ -147,9 +173,7 @@ class NiceHashPrivateApi:
             raise Exception(str(response.status_code) + ": " + response.reason)
 
     def get_epoch_ms_from_now(self):
-        now = datetime.now()
-        now_ec_since_epoch = mktime(now.timetuple()) + now.microsecond / 1000000.0
-        return int(now_ec_since_epoch * 1000)
+        return int(time.time() * 1000)
 
     def algo_settings_from_response(self, algorithm, algo_response):
         algo_setting = None
@@ -231,7 +255,11 @@ class NiceHashPrivateApi:
         return self.request('DELETE', '/main/api/v2/pool/' + pool_id, '', None)
 
     def get_my_pools(self, page, size):
-        return self.request('GET', '/main/api/v2/pools/', '', None)
+        params = {
+            'size': size,
+            'page': page
+        }
+        return self.request('GET', '/main/api/v2/pools/', urlencode(params), None)
 
     def create_hashpower_order(self, market, type, algorithm, price, limit, amount, pool_id, algo_response):
 
@@ -355,7 +383,7 @@ class NiceHashPrivateApi:
 
     def get_mining_rig(self, rig_id):
         return self.request('GET', '/main/api/v2/mining/rig2/' + rig_id, '', None)
-    
+
     def get_mining_rigs(self, size=25, page=0, path=None, sort='NAME'):
         params = {
             'size': size,
@@ -390,10 +418,10 @@ class NiceHashPrivateApi:
         return self.request('GET', '/main/api/v2/mining/rigs/payouts', urlencode(params, True), None)
 
     def get_my_exchange_orders(self, market):
-        return self.request('GET', '/exchange/api/v2/myOrders', 'market=' + market, None)
+        return self.request('GET', '/exchange/api/v2/info/myOrders', 'market=' + market, None)
 
     def get_my_exchange_trades(self, market):
-        return self.request('GET','/exchange/api/v2/myTrades', 'market=' + market, None)
+        return self.request('GET', '/exchange/api/v2/info/myTrades', 'market=' + market, None)
 
     def create_exchange_limit_order(self, market, side, quantity, price):
         query = "market={}&side={}&type=limit&quantity={}&price={}".format(market, side, quantity, price)
@@ -412,7 +440,7 @@ class NiceHashPrivateApi:
         return self.request('DELETE', '/exchange/api/v2/order', query, None)
 
     # action should be one of NiceHashRigAction
-    # if action is POWER_MODE, 
+    # if action is POWER_MODE,
     #   power_mode must be one of NiceHashRigPowerMode
     #
     # Permissions required:
@@ -425,21 +453,24 @@ class NiceHashPrivateApi:
         }
         if group:
             action_data['group'] = group
-        
+
         if power_mode:
             action_data['options'] = [power_mode.name]
 
         return self.request('POST', '/main/api/v2/mining/rigs/status2', '', action_data)
+
 
 class NiceHashRigAction(Enum):
     START = 0
     STOP = 1
     POWER_MODE = 2
 
+
 class NiceHashRigPowerMode(Enum):
     HIGH = 0
     MEDIUM = 1
     LOW = 2
+
 
 if __name__ == "__main__":
     parser = optparse.OptionParser()
@@ -461,11 +492,15 @@ if __name__ == "__main__":
     if options.params is not None:
         params = options.params
 
+    body = None
+    if options.body is not None:
+        body = json.loads(options.body)
+
     try:
-        response = NiceHashPrivateApi.request(options.method, options.path, params, options.body)
+        response = private_api.request(options.method, options.path, params, body)
     except Exception as ex:
         print("Unexpected error:", ex)
-        exit(1)
+        sys.exit(1)
 
     print(response)
-    exit(0)
+    sys.exit(0)

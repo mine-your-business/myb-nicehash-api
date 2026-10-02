@@ -1,0 +1,4 @@
+-r requirements.txt
+flake8>=7.4.1
+pytest>=9.1.1
+build>=1.6.1
