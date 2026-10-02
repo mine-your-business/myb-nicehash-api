@@ -1,0 +1,24 @@
+{
+  "credentials": {
+    "key": "00000000-fake-key0-0000-000000000000",
+    "secret": "11111111-fake-secr-et00-000000000000111111111-fake-secr-et00-000000000000",
+    "organization_id": "22222222-fake-org0-0000-000000000000"
+  },
+  "request": {
+    "method": "GET",
+    "path": "/main/api/v2/mining/miningAddress",
+    "query": "",
+    "body": null,
+    "x_time": 1759400000123,
+    "x_nonce": "55555555-5555-4555-8555-555555555555",
+    "request_id": "66666666-6666-4666-8666-666666666666"
+  },
+  "expected_headers": {
+    "X-Time": "1759400000123",
+    "X-Nonce": "55555555-5555-4555-8555-555555555555",
+    "X-Auth": "00000000-fake-key0-0000-000000000000:0bee83525fab0f5ac027eeac6d5efef9889707451d0ab2b4853d91e71bb664bf",
+    "Content-Type": "application/json",
+    "X-Organization-Id": "22222222-fake-org0-0000-000000000000",
+    "X-Request-Id": "66666666-6666-4666-8666-666666666666"
+  }
+}

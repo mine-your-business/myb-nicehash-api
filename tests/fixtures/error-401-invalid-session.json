@@ -1,0 +1,9 @@
+{
+    "error_id": "e287cb7b-dc4a-4ff4-812a-d489a2d6832e",
+    "errors": [
+        {
+            "code": 2000,
+            "message": "Invalid session (1007)"
+        }
+    ]
+}

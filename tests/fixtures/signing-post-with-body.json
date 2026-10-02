@@ -1,0 +1,28 @@
+{
+  "credentials": {
+    "key": "00000000-fake-key0-0000-000000000000",
+    "secret": "11111111-fake-secr-et00-000000000000111111111-fake-secr-et00-000000000000",
+    "organization_id": "22222222-fake-org0-0000-000000000000"
+  },
+  "request": {
+    "method": "POST",
+    "path": "/main/api/v2/accounting/withdrawal/",
+    "query": "",
+    "body": {
+      "withdrawalAddressId": "wa-1",
+      "amount": "0.001",
+      "currency": "BTC"
+    },
+    "x_time": 1759400000456,
+    "x_nonce": "77777777-7777-4777-8777-777777777777",
+    "request_id": "88888888-8888-4888-8888-888888888888"
+  },
+  "expected_headers": {
+    "X-Time": "1759400000456",
+    "X-Nonce": "77777777-7777-4777-8777-777777777777",
+    "X-Auth": "00000000-fake-key0-0000-000000000000:fa561d71fc3055b571b4d19715acd84831d606fe0c549bb40539ac2744fe8ace",
+    "Content-Type": "application/json",
+    "X-Organization-Id": "22222222-fake-org0-0000-000000000000",
+    "X-Request-Id": "88888888-8888-4888-8888-888888888888"
+  }
+}

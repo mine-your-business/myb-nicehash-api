@@ -1,0 +1,22 @@
+{
+  "total": {
+    "currency": "BTC",
+    "totalBalance": "0.00512345",
+    "available": "0.00500000",
+    "debt": "0",
+    "pending": "0.00012345"
+  },
+  "currencies": [
+    {
+      "active": true,
+      "currency": "BTC",
+      "totalBalance": "0.00512345",
+      "available": "0.00500000",
+      "debt": "0",
+      "pending": "0.00012345",
+      "btcRate": 1,
+      "fiatRate": 60000.0,
+      "enabled": true
+    }
+  ]
+}
