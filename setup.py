@@ -20,17 +20,17 @@ setup(
         'requests>=2.34.2'
     ],
     url='https://github.com/mine-your-business/myb-nicehash-api',
-    python_requires='>=3.10',
+    python_requires='>=3.11',
     zip_safe=False,
     license_expression='GPL-3.0-only',
     classifiers=[
         "Intended Audience :: Developers",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: 3.13",
+        "Programming Language :: Python :: 3.14",
         "Operating System :: OS Independent",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ]
